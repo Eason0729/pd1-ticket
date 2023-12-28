@@ -72,7 +72,10 @@ async def get_user(
         return User(**data)
     except PyJWTError:
         raise UNAUTHORIZE
-    
+
+# check ticket_id
+
+# Check if non-exist(PERMISSION_DENIED), readable(PERMISSION_DENIED), expired(PERMISSION_DENIED)
 def check_ticket(
     request: Request,
     ticket_id: str,
@@ -91,6 +94,7 @@ def check_ticket(
     
     return ticket_id
 
+# ?
 def check_ticket_form(
     request: Request,
     ticket_id: str=Form(),

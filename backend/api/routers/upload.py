@@ -23,6 +23,22 @@ router = APIRouter(
     tags=["Upload"]
 )
 
+# format file (on disk)
+def clang_format(file_path)->Optional[str]:
+    try:
+        commands = [
+            "clang-format",
+            "--style=\"{ BasedOnStyle: Google, IndentWidth: 4, ColumnLimit: 0 }\"",
+            "\"" + file_path + "\""
+        ]
+        result = run(
+            " ".join(commands),
+            stdout=PIPE
+        )
+        return result.stdout
+    except:
+        return b""
+
 @router.post(
     path="",
     status_code=status.HTTP_201_CREATED
@@ -54,26 +70,12 @@ async def upload_file(
         local_dir = join(DATA_DIR, ticket_id)
         
         if format_code:
-            def __format(file_path):
-                try:
-                    commands = [
-                        "clang-format",
-                        "--style=\"{ BasedOnStyle: Google, IndentWidth: 4, ColumnLimit: 0 }\"",
-                        "\"" + file_path + "\""
-                    ]
-                    result = run(
-                        " ".join(commands),
-                        stdout=PIPE
-                    )
-                    return result.stdout
-                except:
-                    return b""
             loop = get_event_loop()
             for filename in listdir(local_dir):
                 local_path = join(local_dir, filename)
                 remote_path = join(remote_dir, filename).replace("\\", "/")
-                format_result = await loop.run_in_executor(None, __format, local_path)
-                if format_result == b"":
+                format_result = await loop.run_in_executor(None, clang_format, local_path)
+                if format_result is None:
                     await sftp.put(
                         local_path,
                         remote_path
@@ -89,6 +91,7 @@ async def upload_file(
                 )
 
         return remote_dir
+    # map errors
     except PermissionDenied:
         raise AUTHORIZE_FAIL
     except:

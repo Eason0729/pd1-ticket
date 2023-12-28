@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from config import EXPIRED_WEEKDAY, EXPIRED_WEEK, SSH_ADDRESS
 from schemas.user import User
 
+# check if the user should read the ticket 
 def check_ticket_authorized(
     ticket_id: str,
     user: User,
@@ -30,6 +31,10 @@ def check_ticket_authorized(
         return pass_authorize
     except: return False
 
+
+# Get IP
+
+# retrun ip if 'x-forwarded-for' is presented, host otherwise
 def get_ip(request: Request):
     header = request.headers
     try:

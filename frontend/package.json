@@ -26,6 +26,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start-env":"BROWSER=none HOST=localhost PORT=3000 REACT_APP_API_END_POINT=http://localhost:8080 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
